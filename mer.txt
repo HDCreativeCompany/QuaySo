@@ -1,9 +1,0 @@
-
-i wanna when i click  
-<li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link">
-              <i class="menu-icon tf-icons ti ti-smart-home"></i>
-              <div data-i18n="Data">Dữ liệu</div>
-            </a>
- </li>
-with change Layout container, it will get from another php file, replace in in file

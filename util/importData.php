@@ -1,10 +1,10 @@
 <?php
-
 // Load the database configuration file
 include_once 'dbConfig.php';
 
 // Include PhpSpreadsheet library autoloader
 require_once '../vendor/autoload.php';
+
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 if (isset($_POST['importSubmit'])) {
@@ -50,6 +50,6 @@ if (isset($_POST['importSubmit'])) {
     }
 }
 
-exit();
+header('Location: ' . $_SERVER['HTTP_REFERER']);
 
-?>
+exit();

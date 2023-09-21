@@ -1,34 +1,17 @@
 <?php
-// Load the database configuration file
-include_once 'dbConfig.php';
+include_once '../util/dbConfig.php';
 
-if (isset($_POST['clearData'])) {
-    
-    // Query to clear all data from the 'members' table
-    $clearQuery = "TRUNCATE TABLE members";
-    
-    if ($db->query($clearQuery)) {
-        $statusMsg = '?status=clearsucc';
-    } else {
-        $statusMsg = '?status=clearerr';
-    }
-}
-if (isset($_POST['clearResult'])) {
-    // Query to clear all data from the 'result' table
-    $prevQuery = "SELECT id FROM members WHERE number = '$number'";
+// Assuming 'members' is the table you want to clear
+$tableName = 'members';
 
-    $clearQuery = "TRUNCATE TABLE result";
-    $updateChosen = "UPDATE members SET chosen = 0 WHERE chosen = 1";
-    if ($db->query($prevQuery))
-        if ($db->query($clearQuery) && $db->query($updateChosen) ) {
-            $statusMsg = '?status=clear_succ';
-        } else {
-            $statusMsg = '?status=clear_err';
-        }
-    else {
-        $statusMsg = '?status=nothing';
-    }
+// SQL query to truncate (clear) the table
+$sql = "TRUNCATE TABLE $tableName";
+
+if ($db->query($sql) === TRUE) {
+    echo "Table $tableName has been cleared successfully.";
+} else {
+    echo "Error clearing table: " . $db->error;
 }
 
-// Redirect back to index.php with a status message
-header("Location: index.php" . $statusMsg);
+// Close the database connection
+$db->close();

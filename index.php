@@ -32,7 +32,7 @@
 
 <body>
     <div class="container">
-        <p style="font-size: 50px; font-weight: bold;">LUCKYDRAW PEPSICO</p>
+        <p style="font-size: 50px; font-weight: bold;">LUCKY DRAW PEPSICO</p>
         <button class="btn btn-primary btn-lg" onclick="goToLink('spin')">QUAY SỐ</button>
         <button class="btn btn-secondary btn-lg" onclick="goToLink('setting')">CẤU HÌNH</button>
     </div>

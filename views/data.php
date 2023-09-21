@@ -1,29 +1,44 @@
 <?php
 include_once '../util/dbConfig.php';
+
+// Pagination variables
+$rowsPerPage = 20;  // Number of rows per page
+
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1; // Current page number
+$startRow = ($page - 1) * $rowsPerPage; // Starting row for the current page
+
+$totalRowsQuery = $db->query("SELECT COUNT(*) AS total FROM members");
+$totalRows = $totalRowsQuery->fetch_assoc()['total'];
+
+// Calculate total pages
+$totalPages = ceil($totalRows / $rowsPerPage);
+// Get member rows for the current page
+$result = $db->query("SELECT * FROM members ORDER BY id ASC LIMIT $startRow, $rowsPerPage");
 ?>
 
 <div class="container-xxl flex-grow-1 container-p-y">
 
-    <div class="col-md-12" id="importFrm">
-        <form class="row g-3" action="../util/importData.php" method="post" enctype="multipart/form-data">
-            <div class="col-auto">
+    <div class="row g-3" id="importFrm">
+
+        <form class="col-md-6" action="../util/importData.php" method="post" enctype="multipart/form-data">
+            <div class="input-group">
                 <label for="fileInput" class="visually-hidden">File</label>
                 <input type="file" class="form-control" name="file" id="fileInput" />
-            </div>
-            <div class="col-auto">
-                <input type="submit" class="btn btn-primary mb-3" name="importSubmit" value="Import">
-            </div>
 
-            <form class="col-auto" action="clearData.php" method="post" enctype="multipart/form-data">
-                <button type="submit" class="btn btn-danger" name="clearData">Clear Data</button>
-            </form>
-
+                <button class="btn btn-outline-primary" name="importSubmit" type="submit" id="importSubmit">Import</button>
+            </div>
         </form>
+
+        <form class="col-md-6" id="clearForm" action="../util/clearData.php" method="post" enctype="multipart/form-data">
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger" onclick="loadingContent('clearData')">Clear Data</button>
+            </div>
+        </form>
+        <div id="noti"></div>
     </div>
 
-
     <h2>Members Data</h2>
-    <table class="table table-striped table-bordered table-sm">
+    <table class="table table-striped table-bordered table-sm ">
         <thead class="table-dark">
             <tr>
                 <th>#</th>
@@ -34,14 +49,11 @@ include_once '../util/dbConfig.php';
                 <th>Province</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="dataTable">
             <?php
-            // Get member rows 
-            $result = $db->query("SELECT * FROM members ORDER BY id ASC");
             if ($result->num_rows > 0) {
-                $i = 0;
+                $i = $startRow + 1; // Start count from the correct index
                 while ($row = $result->fetch_assoc()) {
-                    $i++;
             ?>
                     <tr>
                         <td><?php echo $i; ?></td>
@@ -51,12 +63,30 @@ include_once '../util/dbConfig.php';
                         <td><?php echo $row['address']; ?></td>
                         <td><?php echo $row['province']; ?></td>
                     </tr>
-                <?php }
-            } else { ?>
+                <?php
+                    $i++;
+                }
+            } else {
+                ?>
                 <tr>
-                    <td colspan="7">No member(s) found...</td>
+                    <td colspan="6">No member(s) found...</td>
                 </tr>
             <?php } ?>
         </tbody>
     </table>
+    <!-- Pagination controls -->
+</div>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <?php
+            for ($pageNum = 1; $pageNum <= $totalPages; $pageNum++) {
+                $activeClass = $pageNum === $page ? 'active' : '';
+            ?>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" onclick="loadData(<?php echo $pageNum; ?>)"><?php echo $pageNum; ?></a>
+                </li>
+            <?php } ?>
+        </ul>
+    </nav>
 </div>

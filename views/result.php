@@ -14,11 +14,13 @@ $startRow = ($page - 1) * $rowsPerPage;
 $prizeid = isset($_GET['prizeid']) ? $_GET['prizeid'] : '';
 
 // Build the SQL query with filtering
-$sql = "SELECT * FROM result";
+$sql = "SELECT result.*, prize.pname AS prize_name FROM result LEFT JOIN prize ON result.prizeid = prize.prizeid";
+
+
 if (!empty($prizeid)) {
-    $sql .= " WHERE prizeid = '$prizeid'";
+    $sql .= " WHERE result.prizeid = '$prizeid'";
 }
-$sql .= " ORDER BY id ASC LIMIT $startRow, $rowsPerPage";
+$sql .= " ORDER BY result.id ASC LIMIT $startRow, $rowsPerPage";
 
 // Fetch total rows
 $totalRowsQuery = $db->query("SELECT COUNT(*) AS total FROM result");
@@ -31,24 +33,17 @@ $totalPages = ceil($totalRows / $rowsPerPage);
 $result = $db->query($sql);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Members Data</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Add your CSS styling here -->
-</head>
-
 <body>
     <div class="container-xxl flex-grow-1 container-p-y">
 
         <!-- Import and clear forms -->
         <div class="row g-3" id="importFrm">
-            <form class="col-md-6" id="clearForm" action="../util/clearData.php" method="post" enctype="multipart/form-data">
+            <!-- Add this button within the "Import and clear forms" section -->
+            <button type="button" class="btn btn-primary" onclick="exportData()">Export Data</button>
+
+            <form class="col-md-6" id="clearForm" action="../util/clearResult.php" method="post" enctype="multipart/form-data">
                 <div class="col-auto">
-                    <button type="button" class="btn btn-danger" onclick="loadingContent('clearData')">Clear Data</button>
+                    <button type="button" class="btn btn-danger" onclick="loadingContent('clearResult')">Clear Result</button>
                 </div>
             </form>
             <div id="noti"></div>
@@ -56,11 +51,13 @@ $result = $db->query($sql);
 
 
         <!-- Filter form for prizeid -->
-        <form action="" method="GET">
-            <label for="prizeid">Filter by Prize ID:</label>
-            <input type="text" name="prizeid" id="prizeid" value="<?php echo $prizeid; ?>">
-            <button type="submit">Filter</button>
-        </form>
+        <div class="row g-3" id="importFrm">
+            <form class="col-md-6" action="" method="GET">
+                <label for="prizeid">Filter by Prize ID:</label>
+                <input type="text" name="prizeid" id="prizeid" value="<?php echo $prizeid; ?>">
+                <button type="submit">Filter</button>
+            </form>
+        </div>
 
         <h2>Members Data</h2>
         <table class="table table-striped table-bordered table-sm">
@@ -71,7 +68,7 @@ $result = $db->query($sql);
                     <th>Number</th>
                     <th>Name</th>
                     <th>Phone</th>
-                    <th>Prize ID</th> <!-- Added Prize ID column -->
+                    <th>Prize</th> <!-- Added Prize ID column -->
                 </tr>
             </thead>
             <!-- Table body -->
@@ -86,7 +83,7 @@ $result = $db->query($sql);
                             <td><?php echo $row['number']; ?></td>
                             <td><?php echo $row['name']; ?></td>
                             <td><?php echo $row['phone']; ?></td>
-                            <td><?php echo $row['prizeid']; ?></td> <!-- Display Prize ID -->
+                            <td><?php echo $row['prize_name']; ?></td> <!-- Display Prize Name -->
                         </tr>
                     <?php
                         $i++;
@@ -118,5 +115,3 @@ $result = $db->query($sql);
 
     <script src="script.js"></script> <!-- Add your JavaScript code here -->
 </body>
-
-</html>

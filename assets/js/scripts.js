@@ -81,17 +81,17 @@ function importData() {
     console.log(fileInput)
     console.log(file)
 
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-       
-        console.log('Import successful');
-      } else {
-        console.error('Import failed. Status:', xhr.status);
-      }
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+
+            console.log('Import successful');
+        } else {
+            console.error('Import failed. Status:', xhr.status);
+        }
     };
 
     xhr.send(formData);
-  }
+}
 
 function loadingContent(text) {
     // You can add any logic here to clear the data as needed.
@@ -114,6 +114,20 @@ function loadingContent(text) {
                 loadContent('data');
             }
             break
+        case 'clearResult':
+            if (confirm("Are you sure?")) {
+                // Redirect to the clearData.php script to clear data
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        document.getElementById("noti").innerHTML = xhr.responseText;
+                    }
+                };
+                xhr.open("GET", "../util/" + text + ".php", true);
+                xhr.send();
+                loadContent('data');
+            }
+            break
         default:
             break;
     }
@@ -121,3 +135,25 @@ function loadingContent(text) {
 
 }
 
+function exportData() {
+    // Create a CSV content string
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "ID,Number,Name,Phone,Prize ID\n"; // CSV header
+
+    // Iterate over the table rows and append data to the CSV content
+    const tableRows = document.querySelectorAll("#dataTable tr");
+    tableRows.forEach(row => {
+        const columns = row.querySelectorAll("td");
+        if (columns.length === 5) { // Ensure there are 5 columns (including Prize ID)
+            csvContent += Array.from(columns).map(col => col.innerText).join(",") + "\n";
+        }
+    });
+
+    // Create a download link and trigger the download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "members_data.csv");
+    document.body.appendChild(link); // Required for Firefox
+    link.click(); // Trigger the download
+}

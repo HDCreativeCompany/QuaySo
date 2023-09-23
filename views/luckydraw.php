@@ -12,7 +12,7 @@ function getPrizesFromDatabase($db)
         while ($row = $result->fetch_assoc()) {
             $prizes[] = array(
                 'prizeid' => $row['prizeid'],
-                'name' => $row['name']
+                'pname' => $row['pname']
             );
         }
     }
@@ -39,10 +39,15 @@ function draw($db, $type)
     $randomRecord = getRandomRecord($db);
     $randomNumber = "";
     $randomName = "";
+    $phone = "";
 
     if ($randomRecord) {
+
+        $randomNumberFromDatabase = $randomRecord['number'];
+        $randomNumber = str_pad($randomNumberFromDatabase, 4, '0', STR_PAD_LEFT);  // Add leading zeros
+
         // Display the selected number, name, and prizeid
-        $randomNumber = $randomRecord['number'];
+
         $randomName = $randomRecord['name'];
         $phone = $randomRecord['phone'];
 
@@ -54,7 +59,8 @@ function draw($db, $type)
     // Prepare the response as an associative array
     $response = array(
         'randomNumber' => $randomNumber,
-        'randomName' => $randomName
+        'randomName' => $randomName,
+        'phone' => $phone
     );
 
     // Send the JSON response
@@ -95,6 +101,14 @@ $prizes = getPrizesFromDatabase($db);
         }
 
         .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            /* Adjust the width as needed */
+            margin: 0 auto;
+        }
+
+        .drawcontainer {
             /* Add your background image styles if needed */
             background-size: cover;
             width: 1150px;
@@ -108,11 +122,47 @@ $prizes = getPrizesFromDatabase($db);
             /* Align items in a column */
         }
 
+        .left-section {
+            width: 100%;
+            /* Adjust the width as needed */
+            padding: 20px;
+            /* Background color for left section */
+        }
+
+            .right-section {
+                width: 25%;
+                height: 726px;
+                /* Adjust the width as needed */
+                padding: 10px;
+                background-color: #FFF;
+                text-align: center;
+                /* Background color for right section */
+            }
+
+            .right-section-title {
+                font-size: 30px;
+            }
+
+            .right-section-content {
+                font-size: 25px;
+                text-align: center;
+            }
+
+        /* Initially hide all result containers */
+        .result-container {
+            display: none;
+        }
+
+        /* Show the result container for the selected prizeId */
+        .result-container.show {
+            display: block;
+        }
+
         .odometer {
 
             margin: 0 75px 0 55px;
             /* Margin for the odometer */
-            font-size: 200px;
+            font-size: 500px;
             /* Font size of the odometer */
         }
 
@@ -126,23 +176,35 @@ $prizes = getPrizesFromDatabase($db);
         .button-container .btn {
             /* Add any additional styling you want for the button */
         }
+
+        #resultName {
+            font-size: 80px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <odometer id="resultNum" class="odometer">0000</odometer>
-        <div id="resultName"></div>
-        <div class="button-container row g-3">
-            <select id="prizeSelect" class="form-control col-md-6" style="text-align: center;">
-                <?php
-                foreach ($prizes as $prize) {
-                    echo '<option value="' . $prize['prizeid'] . '">' . $prize['name'] . '</option>';
-                }
-                ?>
-            </select>
+        <div class="left-section drawcontainer">
+            <!--      <div id="resultName">Số may mắn</div> -->
+            <odometer id="resultNum" class="odometer">0000</odometer>
 
-            <button id="claimPrizeBtn" class="btn btn-primary">Quay Số</button>
+            <div class="button-container row g-3">
+                <select id="prizeSelect" class="form-control col-md-6" style="text-align: center;">
+                    <?php
+                    foreach ($prizes as $prize) {
+                        echo '<option value="' . $prize['prizeid'] . '">' . $prize['pname'] . '</option>';
+                    }
+                    ?>
+                </select>
+
+                <button id="claimPrizeBtn" class="btn btn-primary">Quay Số</button>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="right-section-title" id="right-section-title">SỐ TRÚNG GIẢI</div>
+            <div class="right-section-content" id="right-section-content"></div>
         </div>
     </div>
 
@@ -158,6 +220,9 @@ $prizes = getPrizesFromDatabase($db);
 
         // JavaScript code for button click event
         document.getElementById('claimPrizeBtn').addEventListener('click', function() {
+
+            /*  document.getElementById('resultName').innerText = "Số may mắn"; */
+            document.getElementById('resultNum').innerText = '0000';
             var selectedPrizeId = document.getElementById('prizeSelect').value;
 
             // Make an AJAX request to a PHP script to call the draw function
@@ -166,13 +231,14 @@ $prizes = getPrizesFromDatabase($db);
 
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    console.log(xhr.responseText);
+
                     // Parse the response JSON if needed (assuming it's JSON)
                     var response = JSON.parse(xhr.responseText);
 
                     // Update the HTML element with the random number and name
                     var odometerElement = document.getElementById('resultNum');
                     var odometer = new Odometer({
+                        minIntegerLen: 4,
                         el: odometerElement,
                         duration: 2000,
                         format: 'd',
@@ -183,16 +249,71 @@ $prizes = getPrizesFromDatabase($db);
                     // Định dạng response.randomNumber thành 4 chữ số
                     var formattedNumber = formatNumberToFourDigits(response.randomNumber);
                     odometer.update(formattedNumber);
+                    setTimeout(function() {
+                        // Assuming you have an element with the id 'resultName' to display the name
+                        /*   document.getElementById('resultName').innerText = response.randomName; */
+                        updateRightSection(selectedPrizeId);
+                    }, 2000);
 
-                    // Assuming you have an element with the id 'resultName' to display the name
-                    document.getElementById('resultName').innerText = response.randomName;
                 } else {
                     alert('Failed to claim the prize. Please try again.');
                 }
             };
 
             xhr.send();
+
         });
+        // Function to update the right-section with data based on the selected prizeid
+        // Function to update the right-section with data based on the selected prizeid
+        function updateRightSection(prizeId) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'get_results.php?prizeId=' + prizeId, true);
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+
+                    // Get the right-section-content element
+                    var rightSectionContent = document.getElementById('right-section-content');
+
+                    if (rightSectionContent) {
+                        rightSectionContent.innerHTML = ''; // Clear previous content
+
+                        // Display the results in the right-section
+                        for (var i = 0; i < response.length; i++) {
+                            var result = response[i];
+                            var resultItem = document.createElement('div');
+                            resultItem.style.border = '1px solid #7367f0';
+                            resultItem.style.margin = '5px';
+                            resultItem.style.textAlign = 'center';
+                            resultItem.innerText = result.number;
+                            rightSectionContent.appendChild(resultItem);
+                        }
+
+                        if (rightSectionContent.childElementCount >= 15) {
+                            rightSectionContent.style.flexDirection = "column"; // Chuyển về hiển thị theo chiều dọc
+                        }
+                    }
+                } else {
+                    alert('Failed to fetch data. Please try again.');
+                }
+            };
+
+            xhr.send();
+        }
+
+        // Event listener for when the prizeSelect value changes
+        document.getElementById('prizeSelect').addEventListener('change', function() {
+            var selectedPrizeId = this.value;
+            updateRightSection(selectedPrizeId);
+        });
+
+        window.onload = function() {
+            // Your code to be executed after the window is fully loaded
+            // For example, you can call your updateRightSection function here
+            var selectedPrizeId = document.getElementById('prizeSelect').value;
+            updateRightSection(selectedPrizeId);
+        };
     </script>
 
 </body>

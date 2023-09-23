@@ -46,7 +46,7 @@ $result = $db->query("SELECT * FROM prize ORDER BY prizeid ASC LIMIT $startRow, 
                 ?>
                         <tr>
                             <td><?php echo $row['prizeid']; ?></td>
-                            <td><?php echo $row['name']; ?></td>
+                            <td><?php echo $row['pname']; ?></td>
                             <td><?php echo $row['quantity']; ?></td>
                         </tr>
                     <?php

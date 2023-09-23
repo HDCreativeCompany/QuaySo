@@ -49,6 +49,25 @@ function loadData(pageNum) {
 
     xhr.send();
 }
+function loadResult(pageNum) {
+    // You'll need to make an AJAX request to fetch the data for the selected page
+    // and update the table accordingly without refreshing the entire page.
+    // Here's a basic example of how you might implement the AJAX request:
+    // You may need to adjust this based on your application's requirements.
+
+    // Make an AJAX request to fetch data for the selected page
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "./fetchResult.php?page=" + pageNum, true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Update the table with the fetched data
+            document.getElementById("dataTable").innerHTML = xhr.responseText;
+        }
+    };
+
+    xhr.send();
+}
 
 function importData() {
     var fileInput = document.getElementById('fileInput');

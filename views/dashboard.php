@@ -47,7 +47,12 @@
     <script src="../assets/template/addons/vendor/libs/i18n/i18n.js"></script>
     <script src="../assets/template/addons/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../assets/template/addons/vendor/js/menu.js"></script>
-
+    <script src="../assets/template/js/menu.js"></script>
+    <script src="../assets/template/js/bootstrap.js"></script>
+    <script src="../assets/template/js/dropdown-hover.js"></script>
+    <script src="../assets/template/js/helpers.js"></script>
+    <script src="../assets/template/js/mega-dropdown.js"></script>
+    <script src="../assets/template/js/menu.js"></script>
     <!-- endbuild -->
 
     <!-- Main JS -->

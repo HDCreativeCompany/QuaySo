@@ -58,7 +58,14 @@
     <!-- Main JS -->
     <script src="../assets/template/addons/js/main.js"></script>
     <script src="../assets/js/scripts.js"></script>
-
+    <script>
+        window.onload = function() {
+            // Your code to be executed after the window is fully loaded
+            // For example, you can call your updateRightSection function here
+            loadContent('data')
+        };
+    </script>
+    </script>
 </body>
 
 

@@ -136,8 +136,9 @@ function loadingContent(text) {
 }
 
 function exportData() {
-    // Create a CSV content string
+    // Create a CSV content string with UTF-8 encoding
     let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "\uFEFF"; // Byte Order Mark (BOM) to indicate UTF-8 encoding
     csvContent += "ID,Number,Name,Phone,Prize ID\n"; // CSV header
 
     // Iterate over the table rows and append data to the CSV content
@@ -145,7 +146,8 @@ function exportData() {
     tableRows.forEach(row => {
         const columns = row.querySelectorAll("td");
         if (columns.length === 5) { // Ensure there are 5 columns (including Prize ID)
-            csvContent += Array.from(columns).map(col => col.innerText).join(",") + "\n";
+            const rowData = Array.from(columns).map(col => col.innerText);
+            csvContent += rowData.join(",") + "\n";
         }
     });
 
@@ -153,7 +155,7 @@ function exportData() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "members_data.csv");
+    link.setAttribute("download", "ketquaquayso.csv");
     document.body.appendChild(link); // Required for Firefox
     link.click(); // Trigger the download
 }

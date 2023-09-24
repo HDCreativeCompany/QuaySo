@@ -81,11 +81,11 @@ $prizes = getPrizesFromDatabase($db);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odometer Example</title>
+    <title>Pepsico</title>
 
     <?php include 'static/head.php'; ?>
     <script src="../vendor/odometer/odometer.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-default.css" />
+    <link rel="stylesheet" href="../vendor/odometer/themes/odometer-theme-custom.css" />
 
 
     <style>
@@ -98,55 +98,49 @@ $prizes = getPrizesFromDatabase($db);
             margin: 0;
             background-color: #f0f0f0;
             /* Background color */
+            background-image: url(../assets/img/back.png);
+            background-size: cover;
+
         }
 
         .container {
             display: flex;
             justify-content: space-between;
-            width: 100%;
             /* Adjust the width as needed */
             margin: 0 auto;
         }
 
         .drawcontainer {
-            /* Add your background image styles if needed */
-            background-size: cover;
-            width: 1150px;
-            /* Width of the container */
-            height: 600px;
-            /* Height of the container */
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            /* Align items in a column */
+            margin: 10px;
         }
 
         .left-section {
-            width: 100%;
-            /* Adjust the width as needed */
-            padding: 20px;
-            /* Background color for left section */
+            width: 100vw;
         }
 
-            .right-section {
-                width: 25%;
-                height: 726px;
-                /* Adjust the width as needed */
-                padding: 10px;
-                background-color: #FFF;
-                text-align: center;
-                /* Background color for right section */
-            }
+        .right-section {
+            width: 15%;
+            height: 100vh;
+            /* Adjust the width as needed */
+            padding: 10px;
+            background-color: #FFF;
+            text-align: center;
+            /* Background color for right section */
+        }
 
-            .right-section-title {
-                font-size: 30px;
-            }
+        .right-section-title {
+            font-size: 30px;
+            font-weight: bold;
+        }
 
-            .right-section-content {
-                font-size: 25px;
-                text-align: center;
-            }
+        .right-section-content {
+            font-size: 25px;
+            text-align: center;
+        }
 
         /* Initially hide all result containers */
         .result-container {
@@ -159,10 +153,9 @@ $prizes = getPrizesFromDatabase($db);
         }
 
         .odometer {
-
             margin: 0 75px 0 55px;
             /* Margin for the odometer */
-            font-size: 500px;
+            font-size: 270px;
             /* Font size of the odometer */
         }
 
@@ -187,7 +180,8 @@ $prizes = getPrizesFromDatabase($db);
     <div class="container">
         <div class="left-section drawcontainer">
             <!--      <div id="resultName">Số may mắn</div> -->
-            <odometer id="resultNum" class="odometer">0000</odometer>
+
+            <span id="resultNum" class="odometer">0000</span>
 
             <div class="button-container row g-3">
                 <select id="prizeSelect" class="form-control col-md-6" style="text-align: center;">
@@ -201,11 +195,10 @@ $prizes = getPrizesFromDatabase($db);
                 <button id="claimPrizeBtn" class="btn btn-primary">Quay Số</button>
             </div>
         </div>
-
-        <div class="right-section">
-            <div class="right-section-title" id="right-section-title">SỐ TRÚNG GIẢI</div>
-            <div class="right-section-content" id="right-section-content"></div>
-        </div>
+    </div>
+    <div class="right-section">
+        <div class="right-section-title" id="right-section-title">SỐ TRÚNG GIẢI</div>
+        <div class="right-section-content" id="right-section-content"></div>
     </div>
 
     <script>
@@ -238,17 +231,15 @@ $prizes = getPrizesFromDatabase($db);
                     // Update the HTML element with the random number and name
                     var odometerElement = document.getElementById('resultNum');
                     var odometer = new Odometer({
-                        minIntegerLen: 4,
+
                         el: odometerElement,
-                        duration: 2000,
-                        format: 'd',
-                        theme: 'default',
-                        animation: 'count'
+
                     });
 
                     // Định dạng response.randomNumber thành 4 chữ số
                     var formattedNumber = formatNumberToFourDigits(response.randomNumber);
                     odometer.update(formattedNumber);
+
                     setTimeout(function() {
                         // Assuming you have an element with the id 'resultName' to display the name
                         /*   document.getElementById('resultName').innerText = response.randomName; */
@@ -273,25 +264,30 @@ $prizes = getPrizesFromDatabase($db);
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
 
-                    // Get the right-section-content element
                     var rightSectionContent = document.getElementById('right-section-content');
 
                     if (rightSectionContent) {
                         rightSectionContent.innerHTML = ''; // Clear previous content
 
-                        // Display the results in the right-section
+                        // Determine the number of columns based on the length of the response
+                        var numColumns = response.length > 18 ? 2 : 1;
+
                         for (var i = 0; i < response.length; i++) {
                             var result = response[i];
+
                             var resultItem = document.createElement('div');
-                            resultItem.style.border = '1px solid #7367f0';
+                            resultItem.style.border = '2px solid #7367f0';
                             resultItem.style.margin = '5px';
                             resultItem.style.textAlign = 'center';
                             resultItem.innerText = result.number;
-                            rightSectionContent.appendChild(resultItem);
-                        }
 
-                        if (rightSectionContent.childElementCount >= 15) {
-                            rightSectionContent.style.flexDirection = "column"; // Chuyển về hiển thị theo chiều dọc
+                            // Set the width to 50% if displaying in two columns
+                            if (numColumns === 2) {
+                                resultItem.style.width = 'calc(50% - 10px)';
+                                resultItem.style.float = 'left';
+                            }
+
+                            rightSectionContent.appendChild(resultItem);
                         }
                     }
                 } else {
@@ -302,9 +298,11 @@ $prizes = getPrizesFromDatabase($db);
             xhr.send();
         }
 
+
         // Event listener for when the prizeSelect value changes
         document.getElementById('prizeSelect').addEventListener('change', function() {
             var selectedPrizeId = this.value;
+            document.getElementById('resultNum').innerText = '0000';
             updateRightSection(selectedPrizeId);
         });
 

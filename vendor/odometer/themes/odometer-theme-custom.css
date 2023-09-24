@@ -1,4 +1,4 @@
-@import url("//fonts.googleapis.com/css?family=Rye");
+@import url('https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap');
 .odometer.odometer-auto-theme, .odometer.odometer-theme-slot-machine {
   display: inline-block;
   vertical-align: middle;
@@ -92,12 +92,12 @@
   background-image: -webkit-linear-gradient(#ffff00, #ffa500);
   background-image: linear-gradient(#ffff00, #ffa500);
   background-color: #fc0;
-  font-family: "Rye", monospace;
-  padding: 0.15em;
+  font-family: 'ADLaM Display', cursive;  
+  padding: 0.10em;
   color: #f80000;
   line-height: 1.35em;
   border: 0.03em solid #000;
-  -webkit-text-stroke: 0.05em #000;
+  -webkit-text-stroke: 0.04em #000;
 }
 .odometer.odometer-auto-theme .odometer-digit, .odometer.odometer-theme-slot-machine .odometer-digit {
   -moz-box-shadow: inset 0 0 0.1em rgba(0, 0, 0, 0.5), 0 0 0 0.03em #fff, 0 0 0 0.05em rgba(0, 0, 0, 0.2);

@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Pepsico Settings</title>
+    <title>Pepsico</title>
 
     <meta name="description" content="" />
 
@@ -32,10 +32,5 @@
 
     <!-- Page CSS -->
 
-    <!-- Helpers -->
-    <script src="../assets/template/addons/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="../assets/template/addons/vendor/js/template-customizer.js"></script>
 
 </head>

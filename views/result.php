@@ -1,5 +1,12 @@
 <?php
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="result.xlsx"');
+header('Cache-Control: max-age=0');
+
+
 include_once '../util/dbConfig.php';
+
+require '../vendor/autoload.php'; // Include PhpSpreadsheet
 
 // Pagination variables
 $rowsPerPage = 20;  // Number of rows per page
@@ -15,6 +22,41 @@ $prizeid = isset($_GET['prizeid']) ? $_GET['prizeid'] : '';
 
 // Build the SQL query with filtering
 $sql = "SELECT result.*, prize.pname AS prize_name FROM result LEFT JOIN prize ON result.prizeid = prize.prizeid";
+
+if (isset($_POST['ExData'])) {
+    $data = fetchAllData();
+
+    $spreadsheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Set headers
+    $sheet->setCellValue('A1', 'Number');
+    $sheet->setCellValue('B1', 'Prize Name');
+
+    // Add data
+    $row = 2;
+    foreach ($data as $item) {
+        $sheet->setCellValue('A' . $row, $item['number']);
+        $sheet->setCellValue('B' . $row, $item['prize_name']);
+        $row++;
+    }
+
+    $writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $writer->save('php://output');
+    
+    die('Export completed.');
+}
+
+function fetchAllData()
+{
+    global $db;
+    $sql = "SELECT result.number, prize.pname AS prize_name 
+            FROM result 
+            LEFT JOIN prize 
+            ON result.prizeid = prize.prizeid";
+    $result = $db->query($sql);
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
 
 
 if (!empty($prizeid)) {
@@ -37,15 +79,20 @@ $result = $db->query($sql);
     <div class="container-xxl flex-grow-1 container-p-y">
 
         <!-- Import and clear forms -->
-        <div class="row g-3" id="importFrm">
+        <div class="row g-3" id="ExData">
             <!-- Add this button within the "Import and clear forms" section -->
-            <button type="button" class="btn btn-primary" onclick="exportData()">Export Data</button>
+            <form class="col-md-6" id="ExDataForm" action="./result.php" method="post" enctype="multipart/form-data">
+                <div class="col-auto">
+                    <!-- Call loadResult() when the button is clicked -->
+                    <button type="button" class="btn btn-primary" onclick="exResult(<?php echo $page; ?>)">Export Data</button>
+                </div>
+            </form>
 
-            <form class="col-md-6" id="clearForm" action="../util/clearResult.php" method="post" enctype="multipart/form-data">
+            <!--   <form class="col-md-6" id="clearForm" action="../util/clearResult.php" method="post" enctype="multipart/form-data">
                 <div class="col-auto">
                     <button type="button" class="btn btn-danger" onclick="loadingContent('clearResult')">Clear Result</button>
                 </div>
-            </form>
+            </form> -->
             <div id="noti"></div>
         </div>
 
@@ -114,4 +161,7 @@ $result = $db->query($sql);
     </div>
 
     <script src="script.js"></script> <!-- Add your JavaScript code here -->
+    <script>
+
+    </script>
 </body>

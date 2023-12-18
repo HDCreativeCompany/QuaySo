@@ -18,7 +18,11 @@
         body {
             margin: 0;
             padding: 0;
-          /*   background: url('assets/img/pepsico.jpg') no-repeat center center fixed; */
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background: url('assets/img/back.png') no-repeat center center fixed;
             background-size: cover;
         }
 

@@ -14,6 +14,7 @@ $totalRows = $totalRowsQuery->fetch_assoc()['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 // Get member rows for the current page
 $result = $db->query("SELECT * FROM members ORDER BY id ASC LIMIT $startRow, $rowsPerPage");
+
 ?>
 
 <div class="container-xxl flex-grow-1 container-p-y">

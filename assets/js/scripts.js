@@ -23,6 +23,7 @@ function loadContent(text) {
                 document.querySelector('#dynamic-content').innerHTML = xhr.responseText;
             } else {
                 console.error('Error loading content:', xhr.status);
+                console.error('Response text:', xhr.responseText);
             }
         }
     };
@@ -67,6 +68,27 @@ function loadResult(pageNum) {
     };
 
     xhr.send();
+}
+function exResult(pageNum) {
+   // Make an AJAX request to trigger the export
+   var xhr = new XMLHttpRequest();
+   xhr.open("POST", "./result.php", true);
+   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   xhr.responseType = 'blob'; // Receive response as a blob
+   xhr.onload = function () {
+       if (xhr.status === 200) {
+           // Create a link to download the file
+           var a = document.createElement('a');
+           a.href = window.URL.createObjectURL(xhr.response);
+           a.download = 'result.xlsx';
+           a.style.display = 'none';
+           document.body.appendChild(a);
+           a.click();
+           document.body.removeChild(a);
+           console.log('Export completed.');
+       }
+   };
+   xhr.send("ExData=Export Data");
 }
 
 function importData() {

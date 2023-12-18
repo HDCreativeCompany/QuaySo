@@ -44,7 +44,7 @@ function draw($db, $type)
     if ($randomRecord) {
 
         $randomNumberFromDatabase = $randomRecord['number'];
-        $randomNumber = str_pad($randomNumberFromDatabase, 4, '0', STR_PAD_LEFT);  // Add leading zeros
+        $randomNumber = str_pad($randomNumberFromDatabase, 3, '0', STR_PAD_LEFT);  // Add leading zeros
 
         // Display the selected number, name, and prizeid
 
@@ -116,6 +116,7 @@ $prizes = getPrizesFromDatabase($db);
             justify-content: center;
             flex-direction: column;
             margin: 10px;
+            width: 70%;
         }
 
         .left-section {
@@ -173,6 +174,12 @@ $prizes = getPrizesFromDatabase($db);
         #resultName {
             font-size: 80px;
         }
+        @media (max-width: 1920px) {
+        .container {
+            width: 80%;
+            padding-top: 10%;
+        }
+    }
     </style>
 </head>
 
@@ -181,7 +188,7 @@ $prizes = getPrizesFromDatabase($db);
         <div class="left-section drawcontainer">
             <!--      <div id="resultName">Số may mắn</div> -->
 
-            <span id="resultNum" class="odometer">0000</span>
+            <span id="resultNum" class="odometer">000</span>
 
             <div class="button-container row g-3">
                 <select id="prizeSelect" class="form-control col-md-6" style="text-align: center;">
@@ -215,7 +222,7 @@ $prizes = getPrizesFromDatabase($db);
         document.getElementById('claimPrizeBtn').addEventListener('click', function() {
 
             /*  document.getElementById('resultName').innerText = "Số may mắn"; */
-            document.getElementById('resultNum').innerText = '0000';
+            document.getElementById('resultNum').innerText = '000';
             var selectedPrizeId = document.getElementById('prizeSelect').value;
 
             // Make an AJAX request to a PHP script to call the draw function
@@ -254,7 +261,7 @@ $prizes = getPrizesFromDatabase($db);
             xhr.send();
 
         });
-        // Function to update the right-section with data based on the selected prizeid
+        
         // Function to update the right-section with data based on the selected prizeid
         function updateRightSection(prizeId) {
             var xhr = new XMLHttpRequest();
@@ -270,7 +277,7 @@ $prizes = getPrizesFromDatabase($db);
                         rightSectionContent.innerHTML = ''; // Clear previous content
 
                         // Determine the number of columns based on the length of the response
-                        var numColumns = response.length > 18 ? 2 : 1;
+                        var numColumns = response.length > 14 ? 2 : 1;
 
                         for (var i = 0; i < response.length; i++) {
                             var result = response[i];
@@ -302,7 +309,7 @@ $prizes = getPrizesFromDatabase($db);
         // Event listener for when the prizeSelect value changes
         document.getElementById('prizeSelect').addEventListener('change', function() {
             var selectedPrizeId = this.value;
-            document.getElementById('resultNum').innerText = '0000';
+            document.getElementById('resultNum').innerText = '000';
             updateRightSection(selectedPrizeId);
         });
 

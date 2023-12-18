@@ -12,7 +12,7 @@
 
   DIGIT_FORMAT = 'd';
 
-  MIN_INTEGER_LEN = 4;
+  MIN_INTEGER_LEN = 3;
 
   FORMAT_PARSER = /^\(?([^)]*)\)?(?:(.)(D*)(d*))?$/;
 
